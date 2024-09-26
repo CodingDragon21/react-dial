@@ -16,8 +16,8 @@ const App = () => {
 
     if (!result.cancelled) {
       setImage(result.uri);
-      const fileName = getFileName(result.uri);
-      const fileType = getFileType(result.uri);
+      const fileName = result[0].fileName;
+      const fileType = result[0].mimeType;
 
       console.log(`File Name: ${fileName}`);
       console.log(`File Type: ${fileType}`);

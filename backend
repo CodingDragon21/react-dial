@@ -1,0 +1,63 @@
+from flask import Flask, jsonify, request
+from ultralytics import YOLO  # or whatever library you're using
+import os
+import numpy as np
+import time
+from PIL import Image
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+
+# Load your model
+model = YOLO('runs/classify/train10/weights/last.pt')  # Update with the correct path to your model
+
+@app.route('/')
+def home():
+    return "Welcome to the Local API!"
+
+@app.route('/api/predict', methods=['POST'])
+def predict():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file found'}), 400
+
+    file = request.files['file']
+    
+    # Save the file temporarily
+    
+    unique_filename = f"{int(time.time())}_{file.filename}"
+    file_path = os.path.join('uploads', unique_filename)
+    """png_file_path = os.path.join('uploads', f"{unique_filename}.png")
+    with Image.open(file_path) as img:
+            img.convert('RGB').save(png_file_path, 'PNG')"""
+    file.save(file_path)
+    print(f"Received file: {file.filename}, size: {file.content_length} bytes")
+    print(f"Running model on file: {file_path}")
+   
+
+    try:
+        with Image.open(file_path) as img:
+            img.verify()  
+            print('verified!!')# This will check if the image is valid
+    except Exception as e:
+        print(f"Image verification failed: {e}")
+        return jsonify({'error': 'Uploaded image is corrupted or invalid'}), 400
+
+    try:
+        # Perform prediction
+        results = model(file_path)  # Run the model on the image
+
+        # Process results (modify according to your model's output)
+        names_dict = results[0].names
+        probs = results[0].probs.tolist()
+        prediction = names_dict[np.argmax(probs)]
+        
+        return jsonify({'prediction': prediction})
+    finally:
+        print("Is it getting to here?")
+        #os.remove(file_path)  #Clean up the temporary file
+
+if __name__ == '__main__':
+    os.makedirs('uploads', exist_ok=True)  # Create uploads directory if it doesn't exist
+    app.run(host='0.0.0.0', port=5000)

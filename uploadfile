@@ -15,16 +15,21 @@ const App = () => {
     });
 
     if (!result.cancelled) {
-      setImage(result.uri);
+      setImage(result['assets'][0].uri);
       console.log(result['assets'][0]);
-      const fileName = result['assets'][0].fileName;
+      const fileName = getFileName(result['assets'][0].uri);
       const fileType = result['assets'][0].mimeType;
 
       console.log(`File Name: ${fileName}`);
       console.log(`File Type: ${fileType}`);
       
-      //uploadImage(result.uri, fileName, fileType);
+      uploadImage(result['assets'][0].uri, fileName, fileType);
     }
+  };
+
+  const getFileName = (uri) => {
+    // Extract the file name from the uri
+    return uri.split('/').pop();  // Gets the last part of the uri as the file name
   };
 
   const uploadImage = async (uri, fileName, fileType) => {

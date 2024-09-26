@@ -1,0 +1,54 @@
+import React, { useState } from 'react';
+import { View, Button } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+
+const App = () => {
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      uploadImage(result.uri);
+    }
+  };
+
+  const uploadImage = async (uri) => {
+    const formData = new FormData();
+    formData.append('file', {
+      uri,
+      name: 'photo.jpg', // or extract the name from the file
+      type: 'image/jpeg', // or adjust based on the file type
+    });
+
+    try {
+      const response = await fetch('API LINK HERE', {
+        method: 'POST',
+        body: formData,
+       header: {
+                Accept: 'application/json',
+                // 'Content-Type': 'multipart/form-data', // Do not set this manually for FormData
+            },
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
+  return (
+    <View>
+      <Button title="Pick an image from camera roll" onPress={pickImage} />
+    </View>
+  );
+};
+
+export default App;

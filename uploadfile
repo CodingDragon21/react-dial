@@ -7,6 +7,7 @@ const App = () => {
   const [image, setImage] = useState(null);
 
   const pickImage = async () => {
+    console.log("Picking image");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -14,21 +15,26 @@ const App = () => {
       quality: 0,
     });
 
+    
     if (!result.cancelled) {
+      console.log("Setting image");
       setImage(result.uri);
+      console.log("Upload image");
       uploadImage(result.uri);
     }
   };
 
   const uploadImage = async (uri) => {
+    console.log("Upload image console");
     const formData = new FormData();
     formData.append('file', {
       uri,
       name: 'photo.jpg', // or extract the name from the file
       type: 'image/jpeg', // or adjust based on the file type
     });
-
+    console.log("Finished uploading image (appending to the form data)");
     try {
+        console.log("in the try");
       const response = await fetch('API LINK HERE', {
         method: 'POST',
         body: formData,
@@ -37,9 +43,12 @@ const App = () => {
                 // 'Content-Type': 'multipart/form-data', // Do not set this manually for FormData
             },
       });
+      console.log("finished the response");
       const data = await response.json();
+      console.log("awating the response json");
       console.log(data);
     } catch (error) {
+        console.log("something done messed up");
       console.error('Error uploading image:', error);
     }
   };

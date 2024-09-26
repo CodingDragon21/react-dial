@@ -16,6 +16,8 @@ const App = () => {
 
     if (!result.cancelled) {
       setImage(result.uri);
+      console.log(result);
+      console.log(result[0]);
       const fileName = result[0].fileName;
       const fileType = result[0].mimeType;
 
@@ -23,26 +25,6 @@ const App = () => {
       console.log(`File Type: ${fileType}`);
       
       uploadImage(result.uri, fileName, fileType);
-    }
-  };
-
-  const getFileName = (uri) => {
-    // Extract the file name from the uri
-    console.log("Original URI: ${uri}");
-    let fname = uri.split("\\").pop();
-    console.log("This bad boy is: ${fname}");
-    return fname;  // Gets the last part of the uri as the file name
-  };
-
-  const getFileType = (uri) => {
-    // Extract file extension and return the MIME type
-    const extension = uri.split('.').pop(); // Get the extension from uri
-    if (extension === 'jpg' || extension === 'jpeg') {
-      return 'image/jpeg';
-    } else if (extension === 'png') {
-      return 'image/png';
-    } else {
-      return 'application/octet-stream'; // Fallback if type is unknown
     }
   };
 

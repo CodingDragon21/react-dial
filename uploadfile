@@ -28,7 +28,10 @@ const App = () => {
 
   const getFileName = (uri) => {
     // Extract the file name from the uri
-    return uri.split('/').pop();  // Gets the last part of the uri as the file name
+    console.log(f"Original URI: {uri}");
+    let fname = uri.split("\\").pop();
+    console.log(f"This bad boy is: {fname}");
+    return fname;  // Gets the last part of the uri as the file name
   };
 
   const getFileType = (uri) => {

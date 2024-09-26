@@ -38,11 +38,14 @@ def predict():
         # Verify the image using PIL
         try:
             with Image.open(file_path) as img:
-                img.verify()  # Verify the image integrity
-                print(f"Image {file.filename} verified successfully")
+                print(f"Image format: {img.format}, size: {img.size}, mode: {img.mode}")
+                img.load()  # Load the image into memory to check if it's valid
+                img.save(file_path)  # Re-save to ensure it can be handled properly
+                print(f"Image {file.filename} opened and re-saved successfully")
         except Exception as e:
-            print(f"Image verification failed: {e}")
-            return jsonify({'error': f'Uploaded image is invalid: {str(e)}'}), 400
+            print(f"Image processing failed: {e}")
+            return jsonify({'error': f'Uploaded image is invalid or corrupted: {str(e)}'}), 400
+
 
         # Perform prediction with the model
         print(f"Running prediction on: {file_path}")

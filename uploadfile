@@ -16,15 +16,14 @@ const App = () => {
 
     if (!result.cancelled) {
       setImage(result.uri);
-      console.log(result);
-      console.log(result[0]);
-      const fileName = result[0].fileName;
-      const fileType = result[0].mimeType;
+      console.log(result['assets'][0]);
+      const fileName = result['assets'][0].fileName;
+      const fileType = result['assets'][0].mimeType;
 
       console.log(`File Name: ${fileName}`);
       console.log(`File Type: ${fileType}`);
       
-      uploadImage(result.uri, fileName, fileType);
+      //uploadImage(result.uri, fileName, fileType);
     }
   };
 

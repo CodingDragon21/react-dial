@@ -7,7 +7,6 @@ const App = () => {
   const [image, setImage] = useState(null);
 
   const pickImage = async () => {
-    console.log("Picking image");
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -15,40 +14,55 @@ const App = () => {
       quality: 0,
     });
 
-    
     if (!result.cancelled) {
-      console.log("Setting image");
       setImage(result.uri);
-      console.log("Upload image");
-      uploadImage(result.uri);
+      const fileName = getFileName(result.uri);
+      const fileType = getFileType(result.uri);
+
+      console.log(`File Name: ${fileName}`);
+      console.log(`File Type: ${fileType}`);
+      
+      uploadImage(result.uri, fileName, fileType);
     }
   };
 
-  const uploadImage = async (uri) => {
-    console.log("Upload image console");
+  const getFileName = (uri) => {
+    // Extract the file name from the uri
+    return uri.split('/').pop();  // Gets the last part of the uri as the file name
+  };
+
+  const getFileType = (uri) => {
+    // Extract file extension and return the MIME type
+    const extension = uri.split('.').pop(); // Get the extension from uri
+    if (extension === 'jpg' || extension === 'jpeg') {
+      return 'image/jpeg';
+    } else if (extension === 'png') {
+      return 'image/png';
+    } else {
+      return 'application/octet-stream'; // Fallback if type is unknown
+    }
+  };
+
+  const uploadImage = async (uri, fileName, fileType) => {
     const formData = new FormData();
     formData.append('file', {
       uri,
-      name: 'photo.jpg', // or extract the name from the file
-      type: 'image/jpeg', // or adjust based on the file type
+      name: fileName,  // Use the extracted file name
+      type: fileType,  // Use the extracted MIME type
     });
-    console.log("Finished uploading image (appending to the form data)");
+
     try {
-        console.log("in the try");
       const response = await fetch('API LINK HERE', {
         method: 'POST',
         body: formData,
-       header: {
-                Accept: 'application/json',
-                // 'Content-Type': 'multipart/form-data', // Do not set this manually for FormData
-            },
+        headers: {
+          Accept: 'application/json',
+          // 'Content-Type': 'multipart/form-data', // Do not set this manually for FormData
+        },
       });
-      console.log("finished the response");
       const data = await response.json();
-      console.log("awating the response json");
       console.log(data);
     } catch (error) {
-        console.log("something done messed up");
       console.error('Error uploading image:', error);
     }
   };
